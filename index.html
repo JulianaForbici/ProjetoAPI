@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja de Cartas de Yugi-Oh</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .navbar {
+      background-color: #343a40;
+    }
+    .navbar-brand {
+      color: #ffffff;
+    }
+    .card {
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.05);
+    }
+    .card-img-top {
+      object-fit: cover;
+      height: 250px;
+    }
+    .product-card {
+      margin-bottom: 20px;
+    }
+    .footer {
+      background-color: #343a40;
+      color: #fff;
+      text-align: center;
+      padding: 10px 0;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <a class="navbar-brand" href="#">Loja Yugi-Oh</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Início</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Sobre</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Contato</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <h1 class="text-center mb-4">Loja de Cartas de Yugi-Oh</h1>
+    <div id="product-count"></div>
+    <div class="row" id="product-list"></div>
+  </div>
+
+  <div class="footer">
+    <p>&copy; 2024 Loja Yugi-Oh | Todos os direitos reservados</p>
+  </div>
+
+  <script>
+    async function loadProducts() {
+      try {
+        const response = await fetch('https://db.ygoprodeck.com/api/v7/cardinfo.php?name=Dark%20Magician');
+        const products = await response.json();
+
+        const productList = document.getElementById('product-list');
+        const productCount = document.getElementById('product-count');
+
+        const maxProducts = 100;
+
+        productList.innerHTML = '';
+
+        if (products.data.length === 0) {
+          productList.innerHTML = '<p>Nenhum produto disponível no momento.</p>';
+          productCount.textContent = 'Produtos exibidos: 0';
+          return;
+        }
+
+        products.data.slice(0, maxProducts).forEach(product => {
+          const productCard = document.createElement('div');
+          productCard.classList.add('col-md-4', 'product-card');
+
+          productCard.innerHTML = `
+            <div class="card bg-dark text-white shadow">
+              <img src="${product.card_images[0].image_url}" class="card-img-top" alt="Imagem da carta de Yugi-Oh">
+              <div class="card-body">
+                <h5 class="card-title">${product.name}</h5>
+                <p class="card-text">Preço: R$ ${product.card_prices[0].card_price}</p>
+                <p class="card-text">${product.desc}</p>
+                <button class="btn btn-warning">Comprar</button>
+              </div>
+            </div>
+          `;
+
+          productList.appendChild(productCard);
+        });
+
+        productCount.textContent = `Produtos exibidos: ${Math.min(maxProducts, products.data.length)}`;
+      } catch (error) {
+        console.error('Erro ao carregar os produtos:', error);
+        const productList = document.getElementById('product-list');
+        productList.innerHTML = '<p>Erro ao carregar produtos. Tente novamente mais tarde.</p>';
+      }
+    }
+
+    window.onload = loadProducts;
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
