@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const port = 8080;
+const port = 8080;  
 
 app.use(cors());
 
@@ -34,12 +34,9 @@ const produtos = [
 
 app.get('/produto', (req, res) => {
   let { sortBy, order } = req.query;
-  
-
   sortBy = sortBy || 'nome';  
   order = order || 'asc';     
 
-  
   if (sortBy !== 'nome' && sortBy !== 'preco') {
     return res.status(400).json({ message: "Parâmetro 'sortBy' inválido. Use 'nome' ou 'preco'." });
   }
@@ -58,7 +55,6 @@ app.get('/produto', (req, res) => {
       return valueA > valueB ? -1 : (valueA < valueB ? 1 : 0);
     }
   });
-
 
   res.json(produtosOrdenados);
 });
